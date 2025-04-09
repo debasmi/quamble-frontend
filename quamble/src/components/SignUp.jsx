@@ -1,6 +1,6 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '../api/authService';
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -42,21 +42,7 @@ export default function SignUp() {
     setError(null);
     
     try {
-      const response = await fetch("http://3.109.121.195:5000//signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.name,
-          email: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          role: formData.role
-        }),
-      });
-      
-      const data = await response.json();
+      const data = await authService.signup(formData);
       
       if (data.status === "success") {
         setSuccess(data.message);
@@ -67,8 +53,6 @@ export default function SignUp() {
       } else {
         setError(data.message || "Sign up failed. Please try again.");
       }
-    } catch (err) {
-      setError("Internal server error while adding user.");
     } finally {
       setLoading(false);
     }
@@ -91,6 +75,16 @@ export default function SignUp() {
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {error && (
+            <div class="mb-4 p-3 rounded-md bg-red-50 text-red-700 border border-red-200">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div class="mb-4 p-3 rounded-md bg-green-50 text-green-700 border border-green-200">
+              {success}
+            </div>
+          )}
           <form class="space-y-6" onSubmit={handleSubmit}>
             <div>
                 <label
@@ -103,7 +97,7 @@ export default function SignUp() {
                   <input
                     id="name"
                     name="name"
-                    type="name"
+                    type="text"
                     autocomplete="name"
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
@@ -149,7 +143,7 @@ export default function SignUp() {
                     id="password"
                     name="password"
                     type="password"
-                    autocomplete="current-password"
+                    autocomplete="new-password"
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Enter your password"
@@ -161,59 +155,31 @@ export default function SignUp() {
 
               <div>
                 <label
-                  for="re-password"
+                  for="confirmPassword"
                   class="block text-sm font-medium text-gray-700"
                 >
                   Confirm Password
                 </label>
                 <div class="mt-1">
                   <input
-                    id="re-password"
-                    name="re-password"
-                    type="re-password"
-                    autocomplete="re-password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    autocomplete="new-password"
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder="Enter your password"
+                    placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                   />
                 </div>
               </div>
 
-              {/* <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                  <input
-                    id="remember_me"
-                    name="remember_me"
-                    type="checkbox"
-                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                  />
-                  <label
-                    for="remember_me"
-                    class="ml-2 block text-sm text-gray-900"
-                  >
-                    Remember me
-                  </label>
-                </div>
-
-                <div class="text-sm">
-                  <a
-                    href="#"
-                    class="font-medium text-blue-600 hover:text-blue-500"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-              </div> */}
-
               <div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#661fff] hover:bg-[#7738ff] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                    loading ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
+                  class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#661fff] hover:bg-[#7738ff] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   {loading ? "Creating Account..." : "Sign Up"}
                 </button>
