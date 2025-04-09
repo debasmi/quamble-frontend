@@ -1,7 +1,79 @@
-import React from "react";
-import { Link } from 'react-router-dom';
+
+import React, { useState } from "react";
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "user" // Default role
+  });
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Form validation
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError("All fields are required");
+      return;
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch("http://3.109.121.195:5000/signup/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.name,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          role: formData.role
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === "success") {
+        setSuccess(data.message);
+        // Redirect to login page after 2 seconds
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setError(data.message || "Sign up failed. Please try again.");
+      }
+    } catch (err) {
+      setError("Internal server error while adding user.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div class="min-h-screen bg-gradient-to-b from-gray-100 to-white flex flex-col justify-center py-12 -mt-5 sm:px-6 lg:px-8">
@@ -19,7 +91,7 @@ export default function SignUp() {
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form class="space-y-6" action="#" method="POST">
+          <form class="space-y-6" onSubmit={handleSubmit}>
             <div>
                 <label
                   for="name"
@@ -36,6 +108,8 @@ export default function SignUp() {
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Enter your name"
+                    value={formData.name}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -57,6 +131,8 @@ export default function SignUp() {
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Enter your email address"
+                    value={formData.email}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -77,6 +153,8 @@ export default function SignUp() {
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -86,7 +164,7 @@ export default function SignUp() {
                   for="re-password"
                   class="block text-sm font-medium text-gray-700"
                 >
-                  Conform Password
+                  Confirm Password
                 </label>
                 <div class="mt-1">
                   <input
@@ -97,6 +175,8 @@ export default function SignUp() {
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Enter your password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -130,12 +210,16 @@ export default function SignUp() {
               <div>
                 <button
                   type="submit"
-                  class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#661fff] hover:bg-[#7738ff] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  disabled={loading}
+                  className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#661fff] hover:bg-[#7738ff] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                    loading ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
                 >
-                  Sign Up
+                  {loading ? "Creating Account..." : "Sign Up"}
                 </button>
               </div>
             </form>
+            
             <div class="mt-6">
               <div class="relative">
                 <div class="absolute inset-0 flex items-center">
