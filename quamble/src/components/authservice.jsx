@@ -205,3 +205,4 @@ getThemeLeaderboard: async (theme) => {
     }
   }
 };
+export default API;
