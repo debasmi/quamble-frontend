@@ -42,7 +42,7 @@ export default function SignUp() {
     setError(null);
     
     try {
-      const response = await fetch("http://3.109.121.195:5000/signup/", {
+      const response = await fetch("http://3.109.121.195:5000//signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
