@@ -97,5 +97,67 @@ export const authService = {
         message: 'An error occurred while fetching the daily leaderboard.'
       };
     }
+  },
+
+getThemeLeaderboard: async (theme) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/leaderboard_theme?theme=${encodeURIComponent(theme)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return await response.json();
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'An error occurred while fetching the leaderboard for theme: ' + theme
+      };
+    }
+  },
+  
+  addQuestionManually: async (theme, question, correct_option) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/add_question_master`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          theme,
+          question,
+          correct_option
+        })
+      });
+      return await response.json();
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Failed to add question in the database.'
+      };
+    }
+  },
+  
+  addQuestionLLM: async (theme) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/add_question_llm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          theme
+        })
+      });
+      return await response.json();
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Failed to add question in the database.'
+      };
+    }
   }
 };
