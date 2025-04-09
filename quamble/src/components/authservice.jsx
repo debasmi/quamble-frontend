@@ -159,5 +159,49 @@ getThemeLeaderboard: async (theme) => {
         message: 'Failed to add question in the database.'
       };
     }
+  },
+  createQuiz: async (theme, num_questions) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/create_quiz_master`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          theme,
+          num_questions
+        })
+      });
+      return await response.json();
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Failed to generate quiz.'
+      };
+    }
+  },
+
+  reportQuestionIssue: async (theme, ques_id, issue_description) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/report`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          theme,
+          ques_id,
+          issue_description
+        })
+      });
+      return await response.json();
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'An error occurred while reporting the issue'
+      };
+    }
   }
 };
