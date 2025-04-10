@@ -111,7 +111,7 @@ export const authService = {
   },
   getThemeLeaderboard: async (theme) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/leaderboard_theme?theme=${encodeURIComponent(theme)}`, {
+      const response = await fetch(`${API_BASE_URL}/leaderboard_theme`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -338,7 +338,72 @@ export const authService = {
         message: 'Database insertion failed',
       };
     }
-  }
+  },
+  editProfile: async (profileData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/edit_profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          first_name: profileData.first_name,
+          last_name: profileData.last_name,
+          organisation: profileData.organisation,
+          industry: profileData.industry,
+          bio: profileData.bio
+        }),
+      });
+      const result = await response.json();
+      return result.message ? result : {
+        status: 'success',
+        message: 'Profile updated successfully!'
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Failed to update profile'
+      };
+    }
+  },
+  
+  // New method for view profile
+  viewProfile: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/view_profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return await response.json();
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'User does not exist.'
+      };
+    }
+  },
+  viewQuizScore: async (quiz_id, theme) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/view_quiz_score`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return await response.json();
+      // Server returns: quiz_id, theme, user_response, score, accuracy, time_taken
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Unable to fetch quiz score'
+      };
+    }
+  }, 
 
 
 };
