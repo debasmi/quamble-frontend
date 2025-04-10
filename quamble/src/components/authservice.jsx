@@ -404,7 +404,25 @@ export const authService = {
       };
     }
   }, 
-
-
+  getShareableQuizLink: async (quiz_id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/share_attempted_quiz`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const result = await response.json();
+      return result;
+      
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Unable to generate shareable link'
+      };
+    }
+  }
 };
+
 export default authService;
