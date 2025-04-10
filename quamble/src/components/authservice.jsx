@@ -404,6 +404,28 @@ export const authService = {
       };
     }
   }, 
+  recentQuizzes: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/recent_quizzes`, {
+        method: 'GET',
+        headers: {  
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const result = await response.json();
+      return result.message ? result : {
+        status: 'success',
+        message: 'No quizzes found for the user'
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Unable to fetch recent quizzes'
+      };
+    }
+  },
+
   getShareableQuizLink: async (quiz_id) => {
     try {
       const response = await fetch(`${API_BASE_URL}/share_attempted_quiz`, {
@@ -423,6 +445,8 @@ export const authService = {
       };
     }
   }
+
+
 };
 
 export default authService;
