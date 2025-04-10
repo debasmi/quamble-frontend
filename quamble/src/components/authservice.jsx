@@ -268,5 +268,78 @@ export const authService = {
       };
     }
   },
+  generateRandomQuestion: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/generate_question_random_theme`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.message) {
+        return result;
+      } else {
+        return {
+          status: 'success',
+          message: 'Question added successfully!',
+          theme: result.theme
+        };
+      }
+    } catch (error) {
+      return {
+        status: 'error',
+        message: `Error adding question:${error.question_text }`,
+       
+      };
+    }
+  },
+  
+  addTheme: async (theme) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/add_theme`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          theme
+        })
+      });
+      const result = await response.json();
+      return result.message ? result : {
+        message: "Theme added successfully"
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Failed to add theme.'
+      };
+    }
+  },
+  beatTheAi: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/beat_the_ai`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      return await response.json();
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Database insertion failed',
+      };
+    }
+  }
+
+
 };
 export default authService;
