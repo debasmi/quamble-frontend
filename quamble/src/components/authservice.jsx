@@ -368,7 +368,6 @@ export const authService = {
     }
   },
   
-  // New method for view profile
   viewProfile: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/view_profile`, {
@@ -448,7 +447,7 @@ export const authService = {
 
   fetchExistingQuiz: async (userId, theme) => {
     try {
-      // Build URL with query parameters
+    
       const url = new URL(`${API_BASE_URL}/fetch_existing_quiz`);
       url.searchParams.append('user_id', userId);
       url.searchParams.append('theme', theme);
