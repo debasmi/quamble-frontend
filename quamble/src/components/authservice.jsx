@@ -9,7 +9,12 @@ export const authService = {
         },
         body: JSON.stringify({ email, password }),
       });
-      return await response.json();
+      const result = await response.json();
+      return result.message ? result : {
+        status: 'success',
+        message: 'Welcome!',
+        token: result.token
+      };
     } catch (error) {
       return {
         status: 'danger',
@@ -32,7 +37,11 @@ export const authService = {
           role: userData.role
         }),
       });
-      return await response.json();
+      const result = await response.json();
+      return result.message ? result : {
+        status: 'success',
+        message: 'Account created successfully'
+      };
     } catch (error) {
       return {
         status: 'danger',
@@ -74,6 +83,7 @@ export const authService = {
         }
       });
       return await response.json();
+      // Server returns: { "leaderboard": [...], "status": "success" }
     } catch (error) {
       return {
         status: 'error',
@@ -91,6 +101,7 @@ export const authService = {
         }
       });
       return await response.json();
+      // Server returns: { "leaderboard": [], "status": "success" }
     } catch (error) {
       return {
         status: 'error',
@@ -98,8 +109,7 @@ export const authService = {
       };
     }
   },
-
-getThemeLeaderboard: async (theme) => {
+  getThemeLeaderboard: async (theme) => {
     try {
       const response = await fetch(`${API_BASE_URL}/leaderboard_theme?theme=${encodeURIComponent(theme)}`, {
         method: 'GET',
@@ -116,7 +126,6 @@ getThemeLeaderboard: async (theme) => {
       };
     }
   },
-  
   addQuestionManually: async (theme, question, correct_option) => {
     try {
       const response = await fetch(`${API_BASE_URL}/add_question_master`, {
@@ -131,7 +140,10 @@ getThemeLeaderboard: async (theme) => {
           correct_option
         })
       });
-      return await response.json();
+      const result = await response.json();
+      return result.message ? result : {
+        message: "Question added to question bank"
+      };
     } catch (error) {
       return {
         status: 'error',
@@ -139,7 +151,6 @@ getThemeLeaderboard: async (theme) => {
       };
     }
   },
-  
   addQuestionLLM: async (theme) => {
     try {
       const response = await fetch(`${API_BASE_URL}/add_question_llm`, {
@@ -152,7 +163,10 @@ getThemeLeaderboard: async (theme) => {
           theme
         })
       });
-      return await response.json();
+      const result = await response.json();
+      return result.message ? result : {
+        message: "Question added to question bank"
+      };
     } catch (error) {
       return {
         status: 'error',
@@ -174,6 +188,7 @@ getThemeLeaderboard: async (theme) => {
         })
       });
       return await response.json();
+      // Server returns: { "correct_options": [...], "questions": [...], "quiz_id": 37 }
     } catch (error) {
       return {
         status: 'error',
@@ -181,7 +196,6 @@ getThemeLeaderboard: async (theme) => {
       };
     }
   },
-
   reportQuestionIssue: async (theme, ques_id, issue_description) => {
     try {
       const response = await fetch(`${API_BASE_URL}/report`, {
@@ -196,13 +210,63 @@ getThemeLeaderboard: async (theme) => {
           issue_description
         })
       });
-      return await response.json();
+      const result = await response.json();
+      return result.message ? result : {
+        message: "Issue reported successfully"
+      };
     } catch (error) {
       return {
         status: 'error',
         message: 'An error occurred while reporting the issue'
       };
     }
-  }
+  },
+  submitFeedback: async (rating, comments) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/submit_feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          rating,
+          comments
+        })
+      });
+      const result = await response.json();
+      return result.message ? result : {
+        message: "Feedback submitted successfully"
+      };
+    }
+    catch (error) {
+      return {
+        status: 'error',
+        message: 'Failed to submit feedback.'
+      };
+    }
+  },
+  createquizfrombank: async (theme, num_questions) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/create_quiz_from_bank`, {
+        method: 'POST',  // Fixed: changed method='POST' to method: 'POST'
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          theme,
+          num_questions
+        })
+      });
+      return await response.json();
+      // Server returns: { "correct_options": [...], "questions": [...], "quiz_id": 37 }
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Failed to create quiz.'
+      };
+    }
+  },
 };
-export default API;
+export default authService;
