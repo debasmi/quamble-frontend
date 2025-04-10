@@ -444,6 +444,37 @@ export const authService = {
         message: 'Unable to generate shareable link'
       };
     }
+  },
+
+  fetchExistingQuiz: async (userId, theme) => {
+    try {
+      // Build URL with query parameters
+      const url = new URL(`${API_BASE_URL}/fetch_existing_quiz`);
+      url.searchParams.append('user_id', userId);
+      url.searchParams.append('theme', theme);
+      
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      return result.message ? result : {
+        status: 'success',
+        correct_options: result.correct_options,
+        questions: result.questions,
+        quiz_id: result.quiz_id
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Failed to fetch existing quiz.'
+      };
+    }
   }
 
 
