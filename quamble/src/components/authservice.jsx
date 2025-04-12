@@ -2,7 +2,7 @@ const API_BASE_URL = "http://3.109.121.195:5000";
 export const authService = {
   login: async (email, password) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/login/`, {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,11 +30,12 @@ export const authService = {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: userData.name,
+          
           email: userData.email,
           password: userData.password,
-          confirmPassword: userData.confirmPassword,
-          role: userData.role
+          username: userData.name,
+          confirm_password: userData.confirm_password,
+          role:"user"
         }),
       });
       const result = await response.json();

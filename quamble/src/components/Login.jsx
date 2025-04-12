@@ -1,39 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-
+import { authService } from "./authservice";
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    try {
-      const response = await fetch('http://3.109.121.195:5000/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.status === 'success') {
-        // Store the token in localStorage for future authenticated requests
-        localStorage.setItem('token', data.token);
-        alert(data.message); // You can replace with your preferred notification method
-        navigate('/dashboard'); // Redirect to dashboard after successful login
-      } else {
-        // Handle login failure
-        alert(data.message || 'Login failed');
-      }
-    } catch (err) {
-      alert('Internal server error. Please try again later.');
-    }
-  };
-
   return (
     <>
       <div class="min-h-screen bg-gradient-to-b from-gray-100 to-white flex flex-col justify-center py-12 -mt-10 sm:px-6 lg:px-8">
@@ -51,7 +19,7 @@ export default function Login() {
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form class="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
+            <form class="space-y-6" action="#" method="POST">
               <div>
                 <label
                   for="email"
@@ -68,8 +36,6 @@ export default function Login() {
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Enter your email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -90,8 +56,6 @@ export default function Login() {
                     required
                     class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
               </div>
