@@ -2,7 +2,47 @@ import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from "./authservice";
 
+
+
 export default function SignUp() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirm_password: ''
+  });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate passwords match
+    if (formData.password !== formData.confirm_password) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    try {
+      const result = await authService.signup(formData);
+      
+      if (result.status === 'success') {
+        // Redirect to login page on successful signup
+        navigate('/login');
+      } else {
+        setError(result.message || 'Failed to create account');
+      }
+    } catch (err) {
+      setError('An error occurred during signup');
+    }
+  };
   return (
     <>
       <div class="min-h-screen bg-gradient-to-b from-gray-100 to-white flex flex-col justify-center py-12 -mt-5 sm:px-6 lg:px-8">
@@ -87,7 +127,7 @@ export default function SignUp() {
                   for="re-password"
                   class="block text-sm font-medium text-gray-700"
                 >
-                  Conform Password
+                  Confirm Password
                 </label>
                 <div class="mt-1">
                   <input

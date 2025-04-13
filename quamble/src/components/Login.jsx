@@ -2,6 +2,39 @@ import React, { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from "./authservice";
 export default function Login() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const result = await authService.login(formData.email, formData.password);
+      
+      if (result.status === 'success') {
+        // Store the token in localStorage
+        localStorage.setItem('token', result.token);
+        // Redirect to home or dashboard page
+        navigate('/dashboard'); // Adjust path as needed
+      } else {
+        setError(result.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('An error occurred during login');
+    }
+  };
+
   return (
     <>
       <div class="min-h-screen bg-gradient-to-b from-gray-100 to-white flex flex-col justify-center py-12 -mt-10 sm:px-6 lg:px-8">
